@@ -21,16 +21,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(security:"is_granted('ROLE_ADMIN')"),
-        new Post(validationContext: ['groups' => ['user:create']], processor: UserPasswordHasher::class),
-        new Get(security:"is_granted('ROLE_ADMIN')"),
+        new GetCollection(),
+        new Post(processor: UserPasswordHasher::class),
+        new Get(),
         new Put(processor: UserPasswordHasher::class),
         new Patch(processor: UserPasswordHasher::class),
         new Delete(),
     ],
     denormalizationContext: ['groups' => ['user:create', 'user:update']]
 )]
-#[UniqueEntity('email')]
+#[UniqueEntity('email',message: 'Cet email est déjà utilisé')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -39,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[Groups(['user:create'])]
-    #[Assert\NotBlank(message: 'le l\email ne peut pas etre vide')]
+    #[Assert\NotBlank(message: 'le l\'email ne peut pas etre vide')]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
